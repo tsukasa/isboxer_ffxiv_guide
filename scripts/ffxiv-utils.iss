@@ -410,9 +410,10 @@ objectdef ffxivUtils
 
         ; BootEnabledGameFixes array of strings
         joDalamud:Set["BootEnabledGameFixes", "[]"]
-        joDalamud["BootEnabledGameFixes"]:AddString["prevent_devicechange_crashes"]
-        joDalamud["BootEnabledGameFixes"]:AddString["clr_failfast_hijack"]
-        joDalamud["BootEnabledGameFixes"]:AddString["prevent_icmphandle_crashes"]
+        ; These fixes seem to cause input delays and errors in the dalamud log file.
+        ;joDalamud["BootEnabledGameFixes"]:AddString["prevent_devicechange_crashes"]
+        ;joDalamud["BootEnabledGameFixes"]:AddString["clr_failfast_hijack"]
+        ;joDalamud["BootEnabledGameFixes"]:AddString["prevent_icmphandle_crashes"]
         ; These fixes cause Inner Space to lose its Windows API hooks...
         ;joDalamud["BootEnabledGameFixes"]:AddString["disable_game_openprocess_access_check"]
         ;joDalamud["BootEnabledGameFixes"]:AddString["redirect_openprocess"]
