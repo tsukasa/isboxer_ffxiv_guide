@@ -220,7 +220,7 @@ Unfortunately, this behaviour is due to the "BootEnabledGameFixes" configuration
 
 For this reason, the Dalamud.EasyBoot.dll injection method is the easiest, most reliable and fastest way to load Dalamud into a game process managed by Inner Space.
 
-> __❗ Note:__ This part of the guide describes how to inject Dalamud. There is an issue with inputs within Dalamud's ImGui not being recognized. This issue requires a more sophisticated setup where every character has its own XIVLauncher/Dalamud data directory. An example of how to fan out XIVLauncher/Dalamud's data directories on a per-character basis to sidestep this behaviour is available in chapter III.1 of this guide.
+> __❗ Note:__ This part of the guide describes how to inject Dalamud. There is an issue with inputs within Dalamud's ImGui not being recognized. If you are not using an Inner Space development build newer than 7165 with the new input system enabled, then this issue requires a more sophisticated setup where every character has its own XIVLauncher/Dalamud data directory. An example of how to fan out XIVLauncher/Dalamud's data directories on a per-character basis to sidestep this behaviour is available in chapter III.1 of this guide.
 
 So how exactly do you set up the script?
 
@@ -240,9 +240,11 @@ You can ignore the rest of the settings for now.
 
 Launch a character from your character set and log into the game. Upon zoning into the game world, you should see the Dalamud messages in your chat window.
 
-As mentioned before, in this configuration, Dalamud is operational. Still, inputs in the GUI elements of Dalamud are not recognized due to the changes made on the ImGuiScene library with [this commit in mid-2022][imguiscene_goat_wndproc_commit_github] that somehow ended up breaking the inputs while running within Inner Space.
+As mentioned before, in this configuration, Dalamud is operational. If you are using an Inner Space version newer than 7165 with the new input system enabled, then you are set.
 
-If you want the inputs to work, you must ensure that every character has its own XIVLauncher/Dalamud data directory because the current workaround involves replacing a DLL file before loading Dalamud. Since the Dalamud assets are automatically checked and updated by XIVLauncher during every application start, this operation will fail when multiple characters try to access a single data directory due to locking issues.
+Otherwise, inputs in the GUI elements of Dalamud are not recognized due to the changes made on the ImGuiScene library with [this commit in mid-2022][imguiscene_goat_wndproc_commit_github] that somehow ended up breaking the inputs while running within Inner Space with Inner Space's old input system.
+
+If you want the inputs to work on older Inner Space versions or the old input system, you must ensure that every character has its own XIVLauncher/Dalamud data directory because the current workaround involves replacing a DLL file before loading Dalamud. Since the Dalamud assets are automatically checked and updated by XIVLauncher during every application start, this operation will fail when multiple characters try to access a single data directory due to locking issues.
 
 #### Short Summary
 - Download [ffxiv-utils.iss][ffxiv_utils_iss] and [Dalamud.EasyBoot.dll][dalamud_easyboot_dll].
@@ -292,7 +294,7 @@ It is also an inelegant solution to add multiple nearly identical game profiles 
 
 This part of the guide will:
 - Alter the startup sequence for XIVLauncher to enable the easy configuration of character-specific environment variables.
-- Add support for replacing the `ImGuiScene.dll` to enable inputs in Dalamud while running within Inner Space.
+- Add support for replacing the `ImGuiScene.dll` to enable inputs in Dalamud while running within Inner Space with the old input system.
 - Add ReShade as a post-processor.
 
 ---
@@ -401,7 +403,13 @@ You can verify this by logging into the game client and checking the Inner Space
 
 ### III.2 Enabling ImGuiScene Replacement
 
-As noted earlier, inputs in Dalamud's ImGui are not processed while running under Inner Space [due to changes made][imguiscene_goat_wndproc_commit_github] to `ImGuiScene.dll` in mid-2022. As a workaround, `ffxiv-utils.iss` can replace the `ImGuiScene.dll` with a patched copy that reverts the offending commit that broke the functionality.
+As noted earlier, inputs in Dalamud's ImGui are not processed while running under Inner Space's old input system [due to changes made][imguiscene_goat_wndproc_commit_github] to `ImGuiScene.dll` in mid-2022.
+
+As a user, you have two options:
+- Use an Inner Space build >= 7165 and enable the new input system.
+- Use a patched version of the ImGuiScene.dll and have ffxiv-utils.iss replace the DLL file on every start.
+
+This chapter will describe the second option.
 
 Since XIVLauncher checks and restores Dalamud installations on every application launch, the replacement will occur every time you launch the game through Inner Space.
 
